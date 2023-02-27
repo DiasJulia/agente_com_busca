@@ -115,7 +115,7 @@ class Vehicle {
     }
 
     djikstra(D, matrix) {
-        let index = minDistance(D, matrix);
+        let index = this.minDistance(D, matrix);
 
         let Terreno = matrix[index[0]][index[1]]
 

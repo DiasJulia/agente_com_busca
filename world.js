@@ -47,7 +47,7 @@ class World {
         stroke(0);
         fill(168);
         this.agent.show();
-        this.agent.djikstraAux(this.matriz_terrenos);
+        // this.agent.djikstraAux(this.matriz_terrenos);
         this.agent.update();
     }
 }
