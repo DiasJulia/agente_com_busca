@@ -5,39 +5,47 @@
 
 class Vehicle {
     constructor(x, y) {
+        this.initialX = x;
+        this.initialY = y;
 
         this.pos = createVector(x, y);
         this.vel = createVector(0, 0);
         this.acc = createVector(0, 0);
-        this.maxSpeed = 4;
+        this.maxSpeed = 1;
         this.maxForce = 0.25;
         this.r = 16;
+
+        this.collectedFoods = 0;
+
+        this.path = [];
     }
 
-    seek(target) {
-        let posY = Math.floor(this.pos.y);
-        let posX = Math.floor(this.pos.x);
-        let tarX = Math.floor(target.x);
-        let tarY = Math.floor(target.y);
+    reset() {
+        this.pos.x = this.initialX;
+        this.pos.y = this.initialY;
+    }
 
-        let force = p5.Vector.sub(target, this.pos);
+    /*addaptSpeed(matrix) {
+        let i = round(this.pos.x / TILE_SIZE);
+        let j = round(this.pos.y / TILE_SIZE);
+        if (i > 7) i = 7;
+        if (j > 7) j = 7;
+        if (i < 0) i = 0;
+        if (j < 0) j = 0;
+        this.maxSpeed = matrix[i][j] + 1;
+
+        console.log(this.maxSpeed);
+    }*/
+
+    seek(target) {
+        let force = p5.Vector.mult((p5.Vector.sub(target, this.pos)), 10);
         force.setMag(this.maxSpeed);
         force.sub(this.vel);
-        force.limit(this.maxForce);
         this.applyForce(force);
-        if ((posY >= tarY - 4 && posY <= tarY + 4) && (posX >= tarX - 4 && posX <= tarX + 4)) {
-            target.x = Math.random() * 500;
-            target.y = Math.random() * 500;
-            circle(target.x, target.y, 10);
-            this.count += 1;
-            console.log("Comidas coletadas: " + this.count);
-        }
-
-
     }
 
     applyForce(force) {
-        this.acc.add(force);
+        this.pos.add(force);
     }
 
     update() {
@@ -74,63 +82,10 @@ class Vehicle {
         }
     }
 
-    //Djikstra
-    minDistance(D, matrix) {
-        let min = Number.MAX_VALUE;
-        let indexX = -1;
-        let indexY = -1;
-        for (let v = 0; v < BOARD_TILES; v++) {
-            for (let u = 0; u < BOARD_TILES; u++) {
-                if (matrix[v][u] != -1 && dist[v][u] <= min) {
-                    min = dist[v][u];
-                    indexX = v;
-                    indexY = u;
-                }
-            }
-        }
-        return [indexX, indexY];
-    }
-
-    djikstraAux(matrix) {
-        let D = matrix;
-        for (var i = 0; i < BOARD_TILES; i++) {
-            for (var j = 0; j < BOARD_TILES; j++) {
-                D[i][j] = Number.MAX_VALUE;
-            }
-        }
-        let discreteX = (this.pos.x - TILE_SIZE / 2) / TILE_SIZE;
-        let discreteY = (this.pos.y - TILE_SIZE / 2) / TILE_SIZE;
-        console.log(discreteX, discreteY);
-        D[discreteX][discreteY] = 0;
-        matrix[discreteX][discreteY] = 5;
-        setTimeout(() => {
-            stroke(0);
-            strokeWeight(1);
-            fill(50);
-            rect(discreteX * TILE_SIZE, discreteY * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-            this.show();
-            this.djikstra(D, matrix);
-        }, 500);
-
-    }
-
-    djikstra(D, matrix) {
-        let index = this.minDistance(D, matrix);
-
-        let Terreno = matrix[index[0]][index[1]]
-
-        matrix[index[0]][index[1]] = 5;
-        stroke(0);
-        strokeWeight(1);
-        fill(50);
-        rect(discreteX * TILE_SIZE, discreteY * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-
-        //atualizar a distância dos vértices adjacentes ( [x+1,y], [x,y+1], [x-1,y], [x,y-1]) com o valor do terreno atual
-        D[index[0] + 1][index[1]] = Terreno;
-        D[index[0]][index[1] + 1] = Terreno;
-        D[index[0] - 1][index[1]] = Terreno;
-        D[index[0]][index[1] - 1] = Terreno;
-
+    delay(milliseconds) {
+        return new Promise(resolve => {
+            setTimeout(resolve, milliseconds);
+        });
     }
 
 }

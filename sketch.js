@@ -3,12 +3,18 @@ const BOARD_SIZE = 400;
 const TILE_SIZE = BOARD_SIZE / BOARD_TILES;
 const cores = ['#bbf0e7', '#95e8da', '#0d917b', '#01382f'];
 
+const delay = (milliseconds) => {
+    return new Promise(resolve => {
+        setTimeout(resolve, milliseconds);
+    });
+}
+
 function setup(){
     createCanvas(BOARD_SIZE, BOARD_SIZE);
 
     world = new World();
-    path = []
-    control = "A*"
+    PATH = []
+    CONTROL = "A*"
     // Configura o algoritmo com as informações do mundo
     if(true) // Controle
         alg = new starAlg(
@@ -23,8 +29,7 @@ function setup(){
             ]
         )
 }
-
-setInterval(function draw() {
+function draw() {
     // Teste de A*
     if (!Boolean(path.length) && control === "A*")
         path = alg.update()   
@@ -37,4 +42,4 @@ setInterval(function draw() {
     //     caminho = bfs.update()
     // }, ()=>{})
     world.update();
-}, 500)
+}
