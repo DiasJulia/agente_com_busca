@@ -37,6 +37,7 @@ class Seeker {
     }
 
     markTile(i, j, value) {
+        console.log("aaa", i, j);
         this.visited[i][j] = value;
         stroke(0);
         strokeWeight(1);
@@ -121,6 +122,79 @@ class Seeker {
         }
         return [indexX, indexY];
     }
+
+    async BreadthFirstSearch() {
+        let pq = [];
+
+        //Origem para o ponto
+        let origin = new Array(BOARD_TILES);
+        for (var i = 0; i < BOARD_TILES; i++) {
+            origin[i] = new Array(BOARD_TILES).fill(0);
+            for (var j = 0; j < BOARD_TILES; j++) {
+                origin[i][j] = Number.MAX_VALUE;
+            }
+        }
+
+        pq.push([0, this.discreteX, this.discreteY]);
+        this.Dist[this.discreteX][this.discreteY] = 0;
+        origin[this.discreteX][this.discreteY] = [-1, -1];
+
+        await delay(100);
+        this.markTile(this.discreteX, this.discreteY, false);
+
+        while (pq.length > 0) {
+
+            pq.shift();
+
+            let index = this.minDistance(this.Dist, this.visited);
+
+            await delay(200);
+            this.markTile(index[0], index[1], true);
+
+            if ((this.food.x == TILE_SIZE / 2 + index[0] * TILE_SIZE) && (this.food.y == TILE_SIZE / 2 + index[1] * TILE_SIZE)) {
+                console.log("Achei: ", index);
+                this.found = index;
+                break;
+            }
+
+            //Opção que anda na diagonal
+            let x = index[0];
+            let y = index[1];
+            for (let i = -1; i <= 1; i++) {
+                for (let j = -1; j <= 1; j++) {
+                    //Opção sem andar na diagonal
+                    if (Math.abs(i) == 1 && Math.abs(j) == 1) { continue; }
+                    if (i + x > -1 && i + x < BOARD_TILES && j + y > -1 && j + y < BOARD_TILES) {
+                        if (1 < this.Dist[x + i][y + j]) { //Confere se não está na fronteira
+                            delay(100);
+                            this.markTileAsFringe(x + i, y + j);
+                            this.Dist[x + i][y + j] = 1; //Marca como explorável, mas sem definir distância
+                            origin[x + i][y + j] = [x, y];
+                            pq.push([this.Dist[x + i][y + j],
+                                [x + i],
+                                [y + j]
+                            ]);
+                            pq.sort((a, b) => {
+                                if (a[0] == b[0]) return a[1] - b[1];
+                                return a[0] - b[0];
+                            });
+                            console.log(this.Dist);
+                        }
+                    }
+                }
+            }
+        }
+
+        let point = this.found;
+
+        while (point[0] != -1) {
+            this.path.push(point);
+            point = origin[point[0]][point[1]];
+        }
+
+        return this.path.reverse();
+    }
+
 
     async djikstraSearch() {
         let pq = [];

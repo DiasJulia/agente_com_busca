@@ -21,6 +21,26 @@ class World {
     }
 
     async update() {
+        alert("Iniciando Busca por Largura");
+        this.terrain.generateMap();
+        this.agent = new Vehicle(this.initialAgentX, this.initialAgentY);
+        this.seeker = new Seeker(this.matriz_terrenos, this.food, this.agent);
+        this.target.show();
+
+        this.agent.reset();
+        this.agent.show();
+
+        this.seeker.resetVisited();
+        this.seeker.resetDist();
+
+        await this.seeker.BreadthFirstSearch();
+
+        await this.showSolution(this.seeker.path);
+
+        await delay(1000);
+        await this.createPath(this.seeker.path);
+        await delay(1000);
+
         alert("Iniciando Algoritmo Guloso");
         this.terrain.generateMap();
         this.agent = new Vehicle(this.initialAgentX, this.initialAgentY);
