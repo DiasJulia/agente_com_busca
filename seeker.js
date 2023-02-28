@@ -45,6 +45,19 @@ class Seeker {
         this.agent.show();
     }
 
+    markTileAsFringe(i, j) {
+        if (!this.visited[i][j]) {
+            stroke('red');
+            strokeWeight(1);
+            fill(cores[this.matrix[i][j]]);
+            rect(i * TILE_SIZE, j * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            stroke(0);
+            fill(255);
+            circle(this.food.x, this.food.y, 16);
+            this.agent.show();
+        }
+    }
+
     minDistance(dist, visited) {
         let min = Number.MAX_VALUE;
         let indexX = -1;
@@ -82,10 +95,12 @@ class Seeker {
         this.markTile(this.discreteX, this.discreteY, false);
 
         while (pq.length > 0) {
+
             pq.shift();
 
             let index = this.minDistance(this.Dist, this.visited);
 
+            await delay(200);
             this.markTile(index[0], index[1], true);
 
             if ((this.food.x == TILE_SIZE / 2 + index[0] * TILE_SIZE) && (this.food.y == TILE_SIZE / 2 + index[1] * TILE_SIZE)) {
@@ -103,6 +118,8 @@ class Seeker {
                     //Opção sem andar na diagonal
                     if (Math.abs(i) == 1 && Math.abs(j) == 1) { continue; }
                     if (i + x > -1 && i + x < BOARD_TILES && j + y > -1 && j + y < BOARD_TILES) {
+                        delay(100);
+                        this.markTileAsFringe(x + i, y + j);
                         Terreno = this.matrix[x + i][y + j] * 5;
                         if (Terreno + this.Dist[x][y] < this.Dist[x + i][y + j]) {
                             this.Dist[x + i][y + j] = Terreno + 1 + this.Dist[x][y];
