@@ -45,7 +45,7 @@ class World {
         fill(168);
         this.agent.show();
 
-        await this.seeker.depthFirstSearch();
+        await this.seeker.djikstraSearch();
 
         await this.showSolution(this.seeker.path);
 
@@ -78,9 +78,8 @@ class World {
             fill(cores[this.matriz_terrenos[index[0]][index[1]]])
             rect(index[0] * TILE_SIZE, index[1] * TILE_SIZE, TILE_SIZE, TILE_SIZE);
             const dir = createVector(index[0] * TILE_SIZE + TILE_SIZE / 2, index[1] * TILE_SIZE + TILE_SIZE / 2);
+
             while (this.agent.pos.x != index[0] * TILE_SIZE + TILE_SIZE / 2 || this.agent.pos.y != index[1] * TILE_SIZE + TILE_SIZE / 2) {
-                console.log(this.agent.pos.x, index[0], this.agent.pos.y, index[1])
-                console.log(dir)
                 this.agent.seek(dir);
                 this.agent.update();
                 this.agent.show();
@@ -93,6 +92,9 @@ class World {
         strokeWeight(2);
         fill(255);
         circle(this.food.x, this.food.y, 16);
+        this.agent.show();
+        this.agent.collectedFoods += 1;
+        alert("Agent has collected the food!");
     }
 
     async showSolution(solution) {

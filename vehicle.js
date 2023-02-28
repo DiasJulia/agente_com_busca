@@ -13,15 +13,24 @@ class Vehicle {
         this.maxForce = 0.25;
         this.r = 16;
 
+        this.collectedFoods = 0;
+
         this.path = [];
     }
 
-    seek(target) {
-        let posY = Math.floor(this.pos.y);
-        let posX = Math.floor(this.pos.x);
-        let tarX = Math.floor(target.x);
-        let tarY = Math.floor(target.y);
+    /*addaptSpeed(matrix) {
+        let i = round(this.pos.x / TILE_SIZE);
+        let j = round(this.pos.y / TILE_SIZE);
+        if (i > 7) i = 7;
+        if (j > 7) j = 7;
+        if (i < 0) i = 0;
+        if (j < 0) j = 0;
+        this.maxSpeed = matrix[i][j] + 1;
 
+        console.log(this.maxSpeed);
+    }*/
+
+    seek(target) {
         let force = p5.Vector.mult((p5.Vector.sub(target, this.pos)), 10);
         force.setMag(this.maxSpeed);
         force.sub(this.vel);
@@ -70,17 +79,6 @@ class Vehicle {
         return new Promise(resolve => {
             setTimeout(resolve, milliseconds);
         });
-    }
-
-    async run(terrains) {
-        this.path.reverse();
-
-        for (let pos of this.path) {
-            this.pos.x = TILE_SIZE / 2 + pos[0] * TILE_SIZE;
-            this.pos.y = TILE_SIZE / 2 + pos[1] * TILE_SIZE;
-            await this.delay(500);
-            this.show();
-        }
     }
 
 }
