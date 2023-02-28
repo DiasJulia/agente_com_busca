@@ -62,7 +62,7 @@ class World {
         } else {
             alert("Não deu");
         }
-        //screen = 0;
+        location.reload();
     }
 
     async createPath(pathArray) {
