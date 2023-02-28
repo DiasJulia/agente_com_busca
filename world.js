@@ -21,7 +21,6 @@ class World {
     }
 
     async update() {
-        alert("Iniciando Busca por Profundidade");
         this.terrain.generateMap();
         this.agent = new Vehicle(this.initialAgentX, this.initialAgentY);
         this.seeker = new Seeker(this.matriz_terrenos, this.food, this.agent);
@@ -32,90 +31,38 @@ class World {
 
         this.seeker.resetVisited();
         this.seeker.resetDist();
+        switch (algorithm_chosen) {
+            case 'a_star':
+                await this.seeker.AStarSearch();
+                break;
+            case 'prim':
+                await this.seeker.GreedySearch();
+                break;
+            case 'djikstra':
+                await this.seeker.djikstraSearch();
+                break;
+            case 'bfs':
+                await this.seeker.BreadthFirstSearch();
+                break;
+            case 'dfs':
+                await this.seeker.depthFirstSearch();
+                break;
+            default:
+                break;
+        }
 
-        await this.seeker.depthFirstSearch();
+        if (this.seeker.path != [] || (this.agent.pos.x == this.target.pos.x && this.agent.pos.y == this.target.pos.y)) {
+            await this.showSolution(this.seeker.path);
 
-        await this.showSolution(this.seeker.path);
+            await delay(1000);
+            await this.createPath(this.seeker.path);
+            await delay(1000);
 
-        await delay(1000);
-        await this.createPath(this.seeker.path);
-        await delay(1000);
-
-        alert("Iniciando Busca por Largura");
-        this.terrain.generateMap();
-        this.agent = new Vehicle(this.initialAgentX, this.initialAgentY);
-        this.seeker = new Seeker(this.matriz_terrenos, this.food, this.agent);
-        this.target.show();
-
-        this.agent.reset();
-        this.agent.show();
-
-        this.seeker.resetVisited();
-        this.seeker.resetDist();
-
-        await this.seeker.BreadthFirstSearch();
-
-        await this.showSolution(this.seeker.path);
-
-        await delay(1000);
-        await this.createPath(this.seeker.path);
-        await delay(1000);
-
-        alert("Iniciando Algoritmo Guloso");
-        this.terrain.generateMap();
-        this.agent = new Vehicle(this.initialAgentX, this.initialAgentY);
-        this.seeker = new Seeker(this.matriz_terrenos, this.food, this.agent);
-        this.target.show();
-
-        this.agent.reset();
-        this.agent.show();
-
-        this.seeker.resetVisited();
-        this.seeker.resetDist();
-
-        await this.seeker.GreedySearch();
-
-        await this.showSolution(this.seeker.path);
-
-        await delay(1000);
-        await this.createPath(this.seeker.path);
-        await delay(1000);
-
-        alert("Iniciando Algoritmo Custo Uniforme");
-        this.terrain.generateMap();
-        this.agent = new Vehicle(this.initialAgentX, this.initialAgentY);
-        this.seeker = new Seeker(this.matriz_terrenos, this.food, this.agent);
-        this.target.show();
-
-        this.agent.show();
-
-        this.seeker.resetVisited();
-        this.seeker.resetDist();
-
-        await this.seeker.djikstraSearch();
-
-        await this.showSolution(this.seeker.path);
-
-        await delay(1000);
-        await this.createPath(this.seeker.path);
-
-        alert("Iniciando Algoritmo A*");
-        this.terrain.generateMap();
-        this.agent = new Vehicle(this.initialAgentX, this.initialAgentY);
-        this.seeker = new Seeker(this.matriz_terrenos, this.food, this.agent);
-        this.target.show();
-
-        this.agent.show();
-
-        this.seeker.resetVisited();
-        this.seeker.resetDist();
-
-        await this.seeker.AStarSearch();
-
-        await this.showSolution(this.seeker.path);
-
-        await delay(1000);
-        await this.createPath(this.seeker.path);
+            alert("Sucesso");
+        } else {
+            alert("Não deu");
+        }
+        screen = 0;
     }
 
     async createPath(pathArray) {
@@ -127,14 +74,22 @@ class World {
             const dir = createVector(index[0] * TILE_SIZE + TILE_SIZE / 2, index[1] * TILE_SIZE + TILE_SIZE / 2);
 
             while (this.agent.pos.x != index[0] * TILE_SIZE + TILE_SIZE / 2 || this.agent.pos.y != index[1] * TILE_SIZE + TILE_SIZE / 2) {
-                this.agent.seek(dir);
+                if (this.terrain.matrix[index[0]][index[1]] == 0) {
+                    this.agent.seek(dir, 2);
+                }
+                if (this.terrain.matrix[index[0]][index[1]] == 1) {
+                    this.agent.seek(dir, 1);
+                }
+                if (this.terrain.matrix[index[0]][index[1]] == 2) {
+                    this.agent.seek(dir, 0.5);
+                }
                 this.agent.update();
 
                 this.terrain.generateMap();
 
                 this.target.show();
                 this.agent.show();
-                await delay(1);
+                await delay(5);
             }
         }
         alert("Agent has collected the food!");

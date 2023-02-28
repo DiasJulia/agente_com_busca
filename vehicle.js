@@ -37,10 +37,9 @@ class Vehicle {
         console.log(this.maxSpeed);
     }*/
 
-    seek(target) {
-        let force = p5.Vector.mult((p5.Vector.sub(target, this.pos)), 10);
-        force.setMag(this.maxSpeed);
-        force.sub(this.vel);
+    seek(target, multiplier) {
+        let force = p5.Vector.sub(target, this.pos);
+        force.setMag(multiplier);
         this.applyForce(force);
     }
 

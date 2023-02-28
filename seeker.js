@@ -329,12 +329,13 @@ class Seeker {
             for (let i = -1; i <= 1; i++) {
                 for (let j = -1; j <= 1; j++) {
                     //Opção sem andar na diagonal
+                    if(i==0 && j==0) continue;
                     if (Math.abs(i) == 1 && Math.abs(j) == 1) { continue; }
                     if (i + x > -1 && i + x < BOARD_TILES && j + y > -1 && j + y < BOARD_TILES) {
                         delay(100);
                         this.markTileAsFringe(x + i, y + j);
                         Terreno = this.heuristic([this.food.x, this.food.y], [posX, posY]);
-                        if (Terreno < this.Dist[x + i][y + j]) {
+                        if (Terreno < this.Dist[x + i][y + j] && !this.visited[x + i][y + j]) {
                             this.Dist[x + i][y + j] = Terreno;
                             origin[x + i][y + j] = [x, y];
                             pq.push([this.Dist[x + i][y + j],
@@ -352,11 +353,12 @@ class Seeker {
         }
         let point = this.found;
         console.log(point);
+        await delay(100);
         while (point[0] != -1) {
             this.path.push(point);
+            console.log(origin)
             point = origin[point[0]][point[1]];
             console.log(point);
-            await delay(1000);
         }
         return this.path.reverse();
     }
