@@ -11,5 +11,9 @@
         "**/.settings": true,
         "**/.factorypath": true
     },
-    "hide-files.files": []
+    "hide-files.files": [],
+    "editor.tokenColorCustomizations": {
+        "comments": "",
+        "textMateRules": []
+    }
 }
