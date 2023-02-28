@@ -87,14 +87,22 @@ class World {
             const dir = createVector(index[0] * TILE_SIZE + TILE_SIZE / 2, index[1] * TILE_SIZE + TILE_SIZE / 2);
 
             while (this.agent.pos.x != index[0] * TILE_SIZE + TILE_SIZE / 2 || this.agent.pos.y != index[1] * TILE_SIZE + TILE_SIZE / 2) {
-                this.agent.seek(dir);
+                if(this.terrain.matrix[index[0]][index[1]] == 0) {
+                    this.agent.seek(dir, 2);
+                }
+                if(this.terrain.matrix[index[0]][index[1]] == 1) {
+                    this.agent.seek(dir, 1);
+                }
+                if(this.terrain.matrix[index[0]][index[1]] == 2) {
+                    this.agent.seek(dir, 0.5);
+                }
                 this.agent.update();
 
                 this.terrain.generateMap();
 
                 this.target.show();
                 this.agent.show();
-                await delay(1);
+                await delay(5);
             }
         }
         alert("Agent has collected the food!");
