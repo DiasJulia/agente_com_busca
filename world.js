@@ -40,6 +40,7 @@ class World {
             for (var j = 0; j < BOARD_TILES; j++) {
                 //random entre os 4 tipos de terreno
                 stroke(0);
+                strokeWeight(1);
                 fill(cores[this.matriz_terrenos[i][j]]);
                 rect(i * TILE_SIZE, j * TILE_SIZE, TILE_SIZE, TILE_SIZE);
             }
@@ -184,6 +185,30 @@ class World {
         }
     }
 
+    async createPath(pathArray) {
+        pathArray.reverse();
+        for (let index of pathArray) {
+            stroke(0);
+            strokeWeight(3);
+            fill(cores[this.matriz_terrenos[index[0]][index[1]]])
+            rect(index[0] * TILE_SIZE, index[1] * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            const dir = createVector(index[0] * TILE_SIZE + TILE_SIZE / 2, index[1] * TILE_SIZE + TILE_SIZE / 2);
+            while (this.agent.pos.x != index[0] * TILE_SIZE + TILE_SIZE / 2 || this.agent.pos.y != index[1] * TILE_SIZE + TILE_SIZE / 2) {
+                console.log(this.agent.pos.x, index[0], this.agent.pos.y, index[1]) 
+                console.log(dir)
+                this.agent.seek(dir);
+                this.agent.update();
+                this.agent.show();
+                this.generateMap()
+                await this.delay(1);
+           }
+        }
+        stroke(0);
+        strokeWeight(2);
+        fill(255);
+        circle(this.food.x, this.food.y, 16);
+    }
+
     async djikstraPath() {
         let pq = [];
 
@@ -324,17 +349,7 @@ class World {
         strokeWeight(1);
         this.generateMap();
         await this.delay(500);
-        for (let index of this.agent.path) {
-            stroke(0);
-            strokeWeight(3);
-            fill(cores[this.matriz_terrenos[index[0]][index[1]]])
-            rect(index[0] * TILE_SIZE, index[1] * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-            this.agent.show();
-        }
-        stroke(0);
-        strokeWeight(2);
-        fill(255);
-        circle(this.food.x, this.food.y, 16);
+        this.createPath(this.agent.path)
 
         console.log(origin);
     }
