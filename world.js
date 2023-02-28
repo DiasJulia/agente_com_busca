@@ -50,8 +50,8 @@ class World {
             default:
                 break;
         }
-
-        if (this.seeker.path != [] || (this.agent.pos.x == this.target.pos.x && this.agent.pos.y == this.target.pos.y)) {
+        console.log(this.seeker.path.length)
+        if (this.seeker.path.length != 0 || (this.agent.pos.x == this.target.food.x && this.agent.pos.y == this.target.food.y)) {
             await this.showSolution(this.seeker.path);
 
             await delay(1000);
@@ -62,7 +62,7 @@ class World {
         } else {
             alert("Não deu");
         }
-        screen = 0;
+        //screen = 0;
     }
 
     async createPath(pathArray) {

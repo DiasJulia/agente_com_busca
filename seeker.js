@@ -149,6 +149,7 @@ class Seeker {
             let index = this.minDistance(this.Dist, this.visited);
             if (index[0] == -1) {
                 alert("Sem saída!");
+                this.path = [];
                 return [];
             }
 
@@ -226,6 +227,7 @@ class Seeker {
             let index = this.minDistance(this.Dist, this.visited);
             if (index[0] == -1) {
                 alert("Sem saída!");
+                this.path = [];
                 return [];
             }
 
@@ -307,6 +309,7 @@ class Seeker {
             let index = this.minDistance(this.Dist, this.visited);
             if (index[0] == -1) {
                 alert("Sem saída!");
+                this.path = [];
                 return [];
             }
 
@@ -329,7 +332,7 @@ class Seeker {
             for (let i = -1; i <= 1; i++) {
                 for (let j = -1; j <= 1; j++) {
                     //Opção sem andar na diagonal
-                    if(i==0 && j==0) continue;
+                    if (i == 0 && j == 0) continue;
                     if (Math.abs(i) == 1 && Math.abs(j) == 1) { continue; }
                     if (i + x > -1 && i + x < BOARD_TILES && j + y > -1 && j + y < BOARD_TILES) {
                         delay(100);
@@ -389,6 +392,7 @@ class Seeker {
             let index = this.minDistance(this.Dist, this.visited);
             if (index[0] == -1) {
                 alert("Sem saída!");
+                this.path = [];
                 return [];
             }
 
