@@ -42,7 +42,7 @@ class World {
                 await this.seeker.djikstraSearch();
                 break;
             case 'bfs':
-                await this.seeker.BFSSearch(); //TODO: implementar
+                await this.seeker.BreadthFirstSearch();
                 break;
             case 'dfs':
                 await this.seeker.depthFirstSearch();
