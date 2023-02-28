@@ -93,6 +93,7 @@ class Seeker {
 
                     if (!this.visited[neighborX][neighborY]) {
                         let neighbor = [neighborX, neighborY];
+                        this.markTileAsFringe(neighborX, neighborY);
                         stack.push(neighbor);
                         flag = true;
                     }
