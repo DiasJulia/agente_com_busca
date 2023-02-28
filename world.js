@@ -21,7 +21,6 @@ class World {
     }
 
     async update() {
-        alert("Iniciando Algoritmo Guloso");
         this.terrain.generateMap();
         this.agent = new Vehicle(this.initialAgentX, this.initialAgentY);
         this.seeker = new Seeker(this.matriz_terrenos, this.food, this.agent);
@@ -32,50 +31,69 @@ class World {
 
         this.seeker.resetVisited();
         this.seeker.resetDist();
+        switch(algorithm_chosen) {
+            case 'a_star':
+                await this.seeker.AStarSearch();
+                break;
+            case 'prim':
+                await this.seeker.GreedySearch();
+                break;
+            case 'djikstra':
+                await this.seeker.djikstraSearch();
+                break;
+            case 'bfs':
+                await this.seeker.BFSSearch(); //TODO: implementar
+                break;
+            case 'dfs':
+                await this.seeker.depthFirstSearch();
+                break;
+            default:
+                break;
 
-        await this.seeker.GreedySearch();
 
-        await this.showSolution(this.seeker.path);
-
-        await delay(1000);
-        await this.createPath(this.seeker.path);
-        await delay(1000);
-
-        alert("Iniciando Algoritmo Custo Uniforme");
-        this.terrain.generateMap();
-        this.agent = new Vehicle(this.initialAgentX, this.initialAgentY);
-        this.seeker = new Seeker(this.matriz_terrenos, this.food, this.agent);
-        this.target.show();
-
-        this.agent.show();
-
-        this.seeker.resetVisited();
-        this.seeker.resetDist();
-
-        await this.seeker.djikstraSearch();
-
-        await this.showSolution(this.seeker.path);
-
-        await delay(1000);
-        await this.createPath(this.seeker.path);
-
-        alert("Iniciando Algoritmo A*");
-        this.terrain.generateMap();
-        this.agent = new Vehicle(this.initialAgentX, this.initialAgentY);
-        this.seeker = new Seeker(this.matriz_terrenos, this.food, this.agent);
-        this.target.show();
-
-        this.agent.show();
-
-        this.seeker.resetVisited();
-        this.seeker.resetDist();
-
-        await this.seeker.AStarSearch();
+        }
 
         await this.showSolution(this.seeker.path);
 
         await delay(1000);
         await this.createPath(this.seeker.path);
+        await delay(1000);
+
+    //     alert("Iniciando Algoritmo Custo Uniforme");
+    //     this.terrain.generateMap();
+    //     this.agent = new Vehicle(this.initialAgentX, this.initialAgentY);
+    //     this.seeker = new Seeker(this.matriz_terrenos, this.food, this.agent);
+    //     this.target.show();
+
+    //     this.agent.show();
+
+    //     this.seeker.resetVisited();
+    //     this.seeker.resetDist();
+
+    //     await this.seeker.djikstraSearch();
+
+    //     await this.showSolution(this.seeker.path);
+
+    //     await delay(1000);
+    //     await this.createPath(this.seeker.path);
+
+    //     alert("Iniciando Algoritmo A*");
+    //     this.terrain.generateMap();
+    //     this.agent = new Vehicle(this.initialAgentX, this.initialAgentY);
+    //     this.seeker = new Seeker(this.matriz_terrenos, this.food, this.agent);
+    //     this.target.show();
+
+    //     this.agent.show();
+
+    //     this.seeker.resetVisited();
+    //     this.seeker.resetDist();
+
+    //     await this.seeker.AStarSearch();
+
+    //     await this.showSolution(this.seeker.path);
+
+    //     await delay(1000);
+    //     await this.createPath(this.seeker.path);
     }
 
     async createPath(pathArray) {
