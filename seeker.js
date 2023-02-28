@@ -147,6 +147,10 @@ class Seeker {
             pq.shift();
 
             let index = this.minDistance(this.Dist, this.visited);
+            if (index[0] == -1) {
+                alert("Sem saída!");
+                return [];
+            }
 
             await delay(200);
             this.markTile(index[0], index[1], true);
@@ -220,6 +224,10 @@ class Seeker {
             pq.shift();
 
             let index = this.minDistance(this.Dist, this.visited);
+            if (index[0] == -1) {
+                alert("Sem saída!");
+                return [];
+            }
 
             await delay(200);
             this.markTile(index[0], index[1], true);
@@ -297,6 +305,10 @@ class Seeker {
             pq.shift();
 
             let index = this.minDistance(this.Dist, this.visited);
+            if (index[0] == -1) {
+                alert("Sem saída!");
+                return [];
+            }
 
             await delay(200);
             this.markTile(index[0], index[1], true);
@@ -373,6 +385,10 @@ class Seeker {
             pq.shift();
 
             let index = this.minDistance(this.Dist, this.visited);
+            if (index[0] == -1) {
+                alert("Sem saída!");
+                return [];
+            }
 
             await delay(200);
             this.markTile(index[0], index[1], true);
