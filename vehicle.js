@@ -34,8 +34,6 @@ class Vehicle {
             this.count += 1;
             console.log("Comidas coletadas: " + this.count);
         }
-
-
     }
 
     applyForce(force) {
@@ -76,9 +74,21 @@ class Vehicle {
         }
     }
 
-    //Djikstra
-    djikstra(D, matrix) {
+    delay(milliseconds) {
+        return new Promise(resolve => {
+            setTimeout(resolve, milliseconds);
+        });
+    }
 
+    async run(terrains) {
+        this.path.reverse();
+
+        for (let pos of this.path) {
+            this.pos.x = TILE_SIZE / 2 + pos[0] * TILE_SIZE;
+            this.pos.y = TILE_SIZE / 2 + pos[1] * TILE_SIZE;
+            await this.delay(500);
+            this.show();
+        }
     }
 
 }
