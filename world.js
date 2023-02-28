@@ -40,6 +40,7 @@ class World {
             for (var j = 0; j < BOARD_TILES; j++) {
                 //random entre os 4 tipos de terreno
                 stroke(0);
+                strokeWeight(1);
                 fill(cores[this.matriz_terrenos[i][j]]);
                 rect(i * TILE_SIZE, j * TILE_SIZE, TILE_SIZE, TILE_SIZE);
             }
@@ -66,6 +67,7 @@ class World {
         this.agent.show();
 
         this.djikstraPath();
+        // this.depthFirstSearch();
         this.agent.update();
     }
 
@@ -255,8 +257,8 @@ class World {
                     D[index[0] + 1][index[1]] = Terreno + 1 + D[index[0]][index[1]];
                     origin[index[0] + 1][index[1]] = [index[0], index[1]];
                     pq.push([D[index[0] + 1][index[1]],
-                        [index[0] + 1],
-                        [index[1]]
+                    [index[0] + 1],
+                    [index[1]]
                     ]);
                     pq.sort((a, b) => {
                         if (a[0] == b[0]) return a[1] - b[1];
@@ -270,8 +272,8 @@ class World {
                     D[index[0]][index[1] + 1] = Terreno + 1 + D[index[0]][index[1]];
                     origin[index[0]][index[1] + 1] = [index[0], index[1]];
                     pq.push([D[index[0]][index[1] + 1],
-                        [index[0]],
-                        [index[1] + 1]
+                    [index[0]],
+                    [index[1] + 1]
                     ]);
                     pq.sort((a, b) => {
                         if (a[0] == b[0]) return a[1] - b[1];
@@ -285,8 +287,8 @@ class World {
                     D[index[0] - 1][index[1]] = Terreno + 1 + D[index[0]][index[1]];
                     origin[index[0] - 1][index[1]] = [index[0], index[1]];
                     pq.push([D[index[0] - 1][index[1]],
-                        [index[0] - 1],
-                        [index[1]]
+                    [index[0] - 1],
+                    [index[1]]
                     ]);
                     pq.sort((a, b) => {
                         if (a[0] == b[0]) return a[1] - b[1];
@@ -300,8 +302,8 @@ class World {
                     D[index[0]][index[1] - 1] = Terreno + 1 + D[index[0]][index[1]];
                     origin[index[0]][index[1] - 1] = [index[0], index[1]];
                     pq.push([D[index[0]][index[1] - 1],
-                        [index[0]],
-                        [index[1] - 1]
+                    [index[0]],
+                    [index[1] - 1]
                     ]);
                     pq.sort((a, b) => {
                         if (a[0] == b[0]) return a[1] - b[1];
@@ -337,5 +339,74 @@ class World {
         circle(this.food.x, this.food.y, 16);
 
         console.log(origin);
+    }
+
+    async depthFirstSearch() {
+        let origin = new Array(BOARD_TILES);
+        for (let i = 0; i < BOARD_TILES; i++) {
+            origin[i] = new Array(BOARD_TILES).fill(0);
+        }
+
+        let visited = new Array(BOARD_TILES);
+        for (let i = 0; i < BOARD_TILES; i++) {
+            visited[i] = new Array(BOARD_TILES).fill(false);
+        }
+        let discreteXX = (this.agent.pos.x - TILE_SIZE / 2) / TILE_SIZE;
+        let discreteYY = (this.agent.pos.y - TILE_SIZE / 2) / TILE_SIZE;
+        let stack = [];
+        let start = [discreteXX, discreteYY];
+        stack.push(start);
+
+        while (stack.length > 0) {
+            let current = stack[stack.length - 1];
+            let x = current[0];
+            let y = current[1];
+            visited[x][y] = true;
+            await this.delay(200);
+            stroke(0);
+            strokeWeight(1);
+            fill(50);
+            rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            this.agent.show();
+            if ((this.food.x == TILE_SIZE / 2 + x * TILE_SIZE) && (this.food.y == TILE_SIZE / 2 + y * TILE_SIZE)) {
+                break;
+            }
+            let flag = false;
+            for (let i = -1; i <= 1 && !flag; i++) {
+                for (let j = -1; j <= 1 && !flag; j++) {
+                    if ((i == 0 && j == 0) || (Math.abs(i) == 1 && Math.abs(j) == 1)) {
+                        continue;
+                    }
+                    let neighborX = x + i;
+                    let neighborY = y + j;
+
+                    if (neighborX < 0 || neighborX >= BOARD_TILES || neighborY < 0 || neighborY >= BOARD_TILES) {
+                        continue;
+                    }
+                    if (this.matriz_terrenos[neighborX][neighborY] == 3) {
+                        continue;
+                    }
+
+                    if (!visited[neighborX][neighborY]) {
+                        let neighbor = [neighborX, neighborY];
+                        stack.push(neighbor);
+                        flag = true;
+                    }
+                }
+            }
+            if (!flag)stack.pop();
+        }
+        this.generateMap()
+        for (let index of stack) {
+            stroke(0);
+            strokeWeight(3);
+            fill(cores[this.matriz_terrenos[index[0]][index[1]]])
+            rect(index[0] * TILE_SIZE, index[1] * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            this.agent.show();
+        }
+        stroke(0);
+        strokeWeight(2);
+        fill(255);
+        circle(this.food.x, this.food.y, 16);
     }
 }
