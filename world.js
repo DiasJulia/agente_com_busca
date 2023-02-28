@@ -31,7 +31,7 @@ class World {
 
         this.seeker.resetVisited();
         this.seeker.resetDist();
-        switch(algorithm_chosen) {
+        switch (algorithm_chosen) {
             case 'a_star':
                 await this.seeker.AStarSearch();
                 break;
@@ -49,51 +49,56 @@ class World {
                 break;
             default:
                 break;
-
-
         }
 
-        await this.showSolution(this.seeker.path);
+        if (this.seeker.path != [] || (this.agent.pos.x == this.target.pos.x && this.agent.pos.y == this.target.pos.y)) {
+            await this.showSolution(this.seeker.path);
 
-        await delay(1000);
-        await this.createPath(this.seeker.path);
-        await delay(1000);
+            await delay(1000);
+            await this.createPath(this.seeker.path);
+            await delay(1000);
 
-    //     alert("Iniciando Algoritmo Custo Uniforme");
-    //     this.terrain.generateMap();
-    //     this.agent = new Vehicle(this.initialAgentX, this.initialAgentY);
-    //     this.seeker = new Seeker(this.matriz_terrenos, this.food, this.agent);
-    //     this.target.show();
+            alert("Sucesso");
+        } else {
+            alert("Não deu");
+        }
+        screen = 0;
 
-    //     this.agent.show();
+        //     alert("Iniciando Algoritmo Custo Uniforme");
+        //     this.terrain.generateMap();
+        //     this.agent = new Vehicle(this.initialAgentX, this.initialAgentY);
+        //     this.seeker = new Seeker(this.matriz_terrenos, this.food, this.agent);
+        //     this.target.show();
 
-    //     this.seeker.resetVisited();
-    //     this.seeker.resetDist();
+        //     this.agent.show();
 
-    //     await this.seeker.djikstraSearch();
+        //     this.seeker.resetVisited();
+        //     this.seeker.resetDist();
 
-    //     await this.showSolution(this.seeker.path);
+        //     await this.seeker.djikstraSearch();
 
-    //     await delay(1000);
-    //     await this.createPath(this.seeker.path);
+        //     await this.showSolution(this.seeker.path);
 
-    //     alert("Iniciando Algoritmo A*");
-    //     this.terrain.generateMap();
-    //     this.agent = new Vehicle(this.initialAgentX, this.initialAgentY);
-    //     this.seeker = new Seeker(this.matriz_terrenos, this.food, this.agent);
-    //     this.target.show();
+        //     await delay(1000);
+        //     await this.createPath(this.seeker.path);
 
-    //     this.agent.show();
+        //     alert("Iniciando Algoritmo A*");
+        //     this.terrain.generateMap();
+        //     this.agent = new Vehicle(this.initialAgentX, this.initialAgentY);
+        //     this.seeker = new Seeker(this.matriz_terrenos, this.food, this.agent);
+        //     this.target.show();
 
-    //     this.seeker.resetVisited();
-    //     this.seeker.resetDist();
+        //     this.agent.show();
 
-    //     await this.seeker.AStarSearch();
+        //     this.seeker.resetVisited();
+        //     this.seeker.resetDist();
 
-    //     await this.showSolution(this.seeker.path);
+        //     await this.seeker.AStarSearch();
 
-    //     await delay(1000);
-    //     await this.createPath(this.seeker.path);
+        //     await this.showSolution(this.seeker.path);
+
+        //     await delay(1000);
+        //     await this.createPath(this.seeker.path);
     }
 
     async createPath(pathArray) {
@@ -105,13 +110,13 @@ class World {
             const dir = createVector(index[0] * TILE_SIZE + TILE_SIZE / 2, index[1] * TILE_SIZE + TILE_SIZE / 2);
 
             while (this.agent.pos.x != index[0] * TILE_SIZE + TILE_SIZE / 2 || this.agent.pos.y != index[1] * TILE_SIZE + TILE_SIZE / 2) {
-                if(this.terrain.matrix[index[0]][index[1]] == 0) {
+                if (this.terrain.matrix[index[0]][index[1]] == 0) {
                     this.agent.seek(dir, 2);
                 }
-                if(this.terrain.matrix[index[0]][index[1]] == 1) {
+                if (this.terrain.matrix[index[0]][index[1]] == 1) {
                     this.agent.seek(dir, 1);
                 }
-                if(this.terrain.matrix[index[0]][index[1]] == 2) {
+                if (this.terrain.matrix[index[0]][index[1]] == 2) {
                     this.agent.seek(dir, 0.5);
                 }
                 this.agent.update();
