@@ -49,6 +49,8 @@ class World {
 
         await this.showSolution(this.seeker.path);
 
+        await delay(1000);
+        this.createPath(this.seeker.path);
     }
 
     generateMap() {
@@ -66,6 +68,31 @@ class World {
         stroke(0);
         fill(168);
         this.agent.show();
+    }
+
+    async createPath(pathArray) {
+        pathArray;
+        for (let index of pathArray) {
+            stroke(0);
+            strokeWeight(1);
+            fill(cores[this.matriz_terrenos[index[0]][index[1]]])
+            rect(index[0] * TILE_SIZE, index[1] * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            const dir = createVector(index[0] * TILE_SIZE + TILE_SIZE / 2, index[1] * TILE_SIZE + TILE_SIZE / 2);
+            while (this.agent.pos.x != index[0] * TILE_SIZE + TILE_SIZE / 2 || this.agent.pos.y != index[1] * TILE_SIZE + TILE_SIZE / 2) {
+                console.log(this.agent.pos.x, index[0], this.agent.pos.y, index[1])
+                console.log(dir)
+                this.agent.seek(dir);
+                this.agent.update();
+                this.agent.show();
+                strokeWeight(1);
+                this.generateMap();
+                await delay(1);
+            }
+        }
+        stroke(0);
+        strokeWeight(2);
+        fill(255);
+        circle(this.food.x, this.food.y, 16);
     }
 
     async showSolution(solution) {
@@ -88,8 +115,6 @@ class World {
         fill(255);
 
         circle(this.food.x, this.food.y, 16);
-        
-        await this.delay(500);
-        this.createPath(this.agent.path)
+
     }
 }
