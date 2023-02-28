@@ -9,7 +9,7 @@ class Vehicle {
         this.pos = createVector(x, y);
         this.vel = createVector(0, 0);
         this.acc = createVector(0, 0);
-        this.maxSpeed = 4;
+        this.maxSpeed = 1;
         this.maxForce = 0.25;
         this.r = 16;
 
@@ -22,22 +22,14 @@ class Vehicle {
         let tarX = Math.floor(target.x);
         let tarY = Math.floor(target.y);
 
-        let force = p5.Vector.sub(target, this.pos);
+        let force = p5.Vector.mult((p5.Vector.sub(target, this.pos)), 10);
         force.setMag(this.maxSpeed);
         force.sub(this.vel);
-        force.limit(this.maxForce);
         this.applyForce(force);
-        if ((posY >= tarY - 4 && posY <= tarY + 4) && (posX >= tarX - 4 && posX <= tarX + 4)) {
-            target.x = Math.random() * 500;
-            target.y = Math.random() * 500;
-            circle(target.x, target.y, 10);
-            this.count += 1;
-            console.log("Comidas coletadas: " + this.count);
-        }
     }
 
     applyForce(force) {
-        this.acc.add(force);
+        this.pos.add(force);
     }
 
     update() {

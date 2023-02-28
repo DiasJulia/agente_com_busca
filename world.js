@@ -34,6 +34,7 @@ class World {
         this.agent = new Vehicle(TILE_SIZE / 2 + x * TILE_SIZE, TILE_SIZE / 2 + y * TILE_SIZE);
 
         this.seeker = new Seeker(this.matriz_terrenos, this.food, this.agent);
+
     }
 
     async update() {
@@ -87,7 +88,8 @@ class World {
         fill(255);
 
         circle(this.food.x, this.food.y, 16);
-
-        console.log(origin);
+        
+        await this.delay(500);
+        this.createPath(this.agent.path)
     }
 }
