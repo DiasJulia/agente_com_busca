@@ -251,7 +251,7 @@ class Seeker {
                     if (i + x > -1 && i + x < BOARD_TILES && j + y > -1 && j + y < BOARD_TILES) {
                         delay(100);
                         this.markTileAsFringe(x + i, y + j);
-                        Terreno = this.matrix[x + i][y + j] * 5;
+                        Terreno = this.matrix[x + i][y + j] * 3;
                         if (Terreno + this.Dist[x][y] < this.Dist[x + i][y + j]) {
                             this.Dist[x + i][y + j] = Terreno + this.Dist[x][y];
                             origin[x + i][y + j] = [x, y];
@@ -420,7 +420,7 @@ class Seeker {
                     if (i + x > -1 && i + x < BOARD_TILES && j + y > -1 && j + y < BOARD_TILES) {
                         delay(100);
                         this.markTileAsFringe(x + i, y + j);
-                        Terreno = this.matrix[x + i][y + j] * 5;
+                        Terreno = this.matrix[x + i][y + j] * 3;
                         cost = this.heuristic([this.food.x, this.food.y], [posX, posY]);
                         if (Terreno + cost + this.Dist[x][y] < this.Dist[x + i][y + j]) {
                             this.Dist[x + i][y + j] = Terreno + cost + this.Dist[x][y];
