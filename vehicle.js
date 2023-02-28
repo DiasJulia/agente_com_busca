@@ -5,6 +5,8 @@
 
 class Vehicle {
     constructor(x, y) {
+        this.initialX = x;
+        this.initialY = y;
 
         this.pos = createVector(x, y);
         this.vel = createVector(0, 0);
@@ -16,6 +18,11 @@ class Vehicle {
         this.collectedFoods = 0;
 
         this.path = [];
+    }
+
+    reset() {
+        this.pos.x = this.initialX;
+        this.pos.y = this.initialY;
     }
 
     /*addaptSpeed(matrix) {

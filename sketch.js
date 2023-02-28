@@ -16,8 +16,4 @@ function setup() {
     world.update();
 }
 
-function draw() {
-    //background(220);
-
-
-}
+function draw() {}

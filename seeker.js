@@ -58,6 +58,53 @@ class Seeker {
         }
     }
 
+    async depthFirstSearch() {
+        let stack = [];
+        let start = [this.discreteX, this.discreteY];
+        stack.push(start);
+
+        while (stack.length > 0) {
+            let current = stack[stack.length - 1];
+            let x = current[0];
+            let y = current[1];
+
+            await delay(100);
+            this.markTile(x, y, true);
+
+            if ((this.food.x == TILE_SIZE / 2 + x * TILE_SIZE) && (this.food.y == TILE_SIZE / 2 + y * TILE_SIZE)) {
+                break;
+            }
+            let flag = false;
+            for (let i = -1; i <= 1 && !flag; i++) {
+                for (let j = -1; j <= 1 && !flag; j++) {
+                    if ((i == 0 && j == 0) || (Math.abs(i) == 1 && Math.abs(j) == 1)) {
+                        continue;
+                    }
+                    let neighborX = x + i;
+                    let neighborY = y + j;
+
+                    if (neighborX < 0 || neighborX >= BOARD_TILES || neighborY < 0 || neighborY >= BOARD_TILES) {
+                        continue;
+                    }
+                    if (this.matrix[neighborX][neighborY] == 3) {
+                        continue;
+                    }
+
+                    if (!this.visited[neighborX][neighborY]) {
+                        let neighbor = [neighborX, neighborY];
+                        stack.push(neighbor);
+                        flag = true;
+                    }
+                }
+            }
+            if (!flag) stack.pop();
+        }
+
+        this.path = stack;
+
+        return stack;
+    }
+
     minDistance(dist, visited) {
         let min = Number.MAX_VALUE;
         let indexX = -1;
@@ -122,7 +169,7 @@ class Seeker {
                         this.markTileAsFringe(x + i, y + j);
                         Terreno = this.matrix[x + i][y + j] * 5;
                         if (Terreno + this.Dist[x][y] < this.Dist[x + i][y + j]) {
-                            this.Dist[x + i][y + j] = Terreno + 1 + this.Dist[x][y];
+                            this.Dist[x + i][y + j] = Terreno + this.Dist[x][y];
                             origin[x + i][y + j] = [x, y];
                             pq.push([this.Dist[x + i][y + j],
                                 [x + i],
@@ -148,51 +195,162 @@ class Seeker {
         return this.path.reverse();
     }
 
-    async depthFirstSearch() {
-        let stack = [];
-        let start = [this.discreteX, this.discreteY];
-        stack.push(start);
+    heuristic(a, b) {
+        return abs(a[0] - b[0]) + abs(a[1] - b[1])
+    }
 
-        while (stack.length > 0) {
-            let current = stack[stack.length - 1];
-            let x = current[0];
-            let y = current[1];
+    async GreedySearch() {
+        let pq = [];
 
-            await delay(100);
-            this.markTile(x, y, true);
+        //Origem para o ponto
+        let origin = new Array(BOARD_TILES);
+        for (var i = 0; i < BOARD_TILES; i++) {
+            origin[i] = new Array(BOARD_TILES).fill(0);
+            for (var j = 0; j < BOARD_TILES; j++) {
+                origin[i][j] = Number.MAX_VALUE;
+            }
+        }
 
-            if ((this.food.x == TILE_SIZE / 2 + x * TILE_SIZE) && (this.food.y == TILE_SIZE / 2 + y * TILE_SIZE)) {
+        pq.push([0, this.discreteX, this.discreteY]);
+        this.Dist[this.discreteX][this.discreteY] = 0;
+        origin[this.discreteX][this.discreteY] = [-1, -1];
+
+        await delay(100);
+        this.markTile(this.discreteX, this.discreteY, false);
+
+        while (pq.length > 0) {
+
+            pq.shift();
+
+            let index = this.minDistance(this.Dist, this.visited);
+
+            await delay(200);
+            this.markTile(index[0], index[1], true);
+
+            let posX = TILE_SIZE / 2 + index[0] * TILE_SIZE;
+            let posY = TILE_SIZE / 2 + index[1] * TILE_SIZE;
+
+            if ((this.food.x == TILE_SIZE / 2 + index[0] * TILE_SIZE) && (this.food.y == TILE_SIZE / 2 + index[1] * TILE_SIZE)) {
+                console.log("Achei: ", index);
+                this.found = index;
                 break;
             }
-            let flag = false;
-            for (let i = -1; i <= 1 && !flag; i++) {
-                for (let j = -1; j <= 1 && !flag; j++) {
-                    if ((i == 0 && j == 0) || (Math.abs(i) == 1 && Math.abs(j) == 1)) {
-                        continue;
-                    }
-                    let neighborX = x + i;
-                    let neighborY = y + j;
 
-                    if (neighborX < 0 || neighborX >= BOARD_TILES || neighborY < 0 || neighborY >= BOARD_TILES) {
-                        continue;
-                    }
-                    if (this.matrix[neighborX][neighborY] == 3) {
-                        continue;
-                    }
-
-                    if (!this.visited[neighborX][neighborY]) {
-                        let neighbor = [neighborX, neighborY];
-                        stack.push(neighbor);
-                        flag = true;
+            //Opção que anda na diagonal
+            let x = index[0];
+            let y = index[1];
+            let Terreno;
+            for (let i = -1; i <= 1; i++) {
+                for (let j = -1; j <= 1; j++) {
+                    //Opção sem andar na diagonal
+                    if (Math.abs(i) == 1 && Math.abs(j) == 1) { continue; }
+                    if (i + x > -1 && i + x < BOARD_TILES && j + y > -1 && j + y < BOARD_TILES) {
+                        delay(100);
+                        this.markTileAsFringe(x + i, y + j);
+                        Terreno = this.heuristic([this.food.x, this.food.y], [posX, posY]);
+                        if (Terreno < this.Dist[x + i][y + j]) {
+                            this.Dist[x + i][y + j] = Terreno;
+                            origin[x + i][y + j] = [x, y];
+                            pq.push([this.Dist[x + i][y + j],
+                                [x + i],
+                                [y + j]
+                            ]);
+                            pq.sort((a, b) => {
+                                if (a[0] == b[0]) return a[1] - b[1];
+                                return a[0] - b[0];
+                            });
+                        }
                     }
                 }
             }
-            if (!flag) stack.pop();
+        }
+        let point = this.found;
+        console.log(point);
+        while (point[0] != -1) {
+            this.path.push(point);
+            point = origin[point[0]][point[1]];
+            console.log(point);
+            await delay(1000);
+        }
+        return this.path.reverse();
+    }
+
+    async AStarSearch() {
+        let pq = [];
+
+        //Origem para o ponto
+        let origin = new Array(BOARD_TILES);
+        for (var i = 0; i < BOARD_TILES; i++) {
+            origin[i] = new Array(BOARD_TILES).fill(0);
+            for (var j = 0; j < BOARD_TILES; j++) {
+                origin[i][j] = Number.MAX_VALUE;
+            }
         }
 
-        this.path = stack;
+        pq.push([0, this.discreteX, this.discreteY]);
+        this.Dist[this.discreteX][this.discreteY] = 0;
+        origin[this.discreteX][this.discreteY] = [-1, -1];
 
-        return stack;
+        await delay(100);
+        this.markTile(this.discreteX, this.discreteY, false);
+
+        while (pq.length > 0) {
+
+            pq.shift();
+
+            let index = this.minDistance(this.Dist, this.visited);
+
+            await delay(200);
+            this.markTile(index[0], index[1], true);
+
+            let posX = TILE_SIZE / 2 + index[0] * TILE_SIZE;
+            let posY = TILE_SIZE / 2 + index[1] * TILE_SIZE;
+
+            if ((this.food.x == TILE_SIZE / 2 + index[0] * TILE_SIZE) && (this.food.y == TILE_SIZE / 2 + index[1] * TILE_SIZE)) {
+                console.log("Achei: ", index);
+                this.found = index;
+                break;
+            }
+
+            //Opção que anda na diagonal
+            let x = index[0];
+            let y = index[1];
+            let Terreno;
+            let cost;
+            for (let i = -1; i <= 1; i++) {
+                for (let j = -1; j <= 1; j++) {
+                    //Opção sem andar na diagonal
+                    if (Math.abs(i) == 1 && Math.abs(j) == 1) { continue; }
+                    if (i + x > -1 && i + x < BOARD_TILES && j + y > -1 && j + y < BOARD_TILES) {
+                        delay(100);
+                        this.markTileAsFringe(x + i, y + j);
+                        Terreno = this.matrix[x + i][y + j] * 5;
+                        cost = this.heuristic([this.food.x, this.food.y], [posX, posY]);
+                        if (Terreno + cost + this.Dist[x][y] < this.Dist[x + i][y + j]) {
+                            this.Dist[x + i][y + j] = Terreno + cost + this.Dist[x][y];
+                            origin[x + i][y + j] = [x, y];
+                            pq.push([this.Dist[x + i][y + j],
+                                [x + i],
+                                [y + j]
+                            ]);
+                            pq.sort((a, b) => {
+                                if (a[0] == b[0]) return a[1] - b[1];
+                                return a[0] - b[0];
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
+        let point = this.found;
+
+        while (point[0] != -1) {
+            this.path.push(point);
+            point = origin[point[0]][point[1]];
+        }
+
+        return this.path.reverse();
     }
 
 }

@@ -1,21 +1,10 @@
 class World {
     constructor() {
-        let T = 4;
-        //para cada um dos quadrados
-        this.matriz_terrenos = new Array(BOARD_TILES);
-        for (var i = 0; i < BOARD_TILES; i++) {
-            this.matriz_terrenos[i] = new Array(BOARD_TILES).fill(0);
-            for (var j = 0; j < BOARD_TILES; j++) {
-                //random entre os 4 tipos de terreno
-                T = floor(Math.random() * 4);
-                this.matriz_terrenos[i][j] = T;
-                console.log(this.matriz_terrenos);
-                stroke(0);
-                fill(cores[T]);
-                rect(i * TILE_SIZE, j * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-            }
-        }
-        console.log(this.matriz_terrenos);
+        this.terrain = new Terrain();
+        this.matriz_terrenos = this.terrain.getMatrix();
+
+        this.target = new Target(this.matriz_terrenos);
+        this.food = this.target.getFood();
 
         let x = floor(Math.random() * BOARD_TILES);
         let y = floor(Math.random() * BOARD_TILES);
@@ -23,55 +12,73 @@ class World {
             x = floor(Math.random() * BOARD_TILES);
             y = floor(Math.random() * BOARD_TILES);
         }
-        this.food = createVector(TILE_SIZE / 2 + x * TILE_SIZE, TILE_SIZE / 2 + y * TILE_SIZE);
 
-        x = floor(Math.random() * BOARD_TILES);
-        y = floor(Math.random() * BOARD_TILES);
-        while (this.matriz_terrenos[x][y] == 3) {
-            x = floor(Math.random() * BOARD_TILES);
-            y = floor(Math.random() * BOARD_TILES);
-        }
-        this.agent = new Vehicle(TILE_SIZE / 2 + x * TILE_SIZE, TILE_SIZE / 2 + y * TILE_SIZE);
+        this.initialAgentX = TILE_SIZE / 2 + x * TILE_SIZE;
+        this.initialAgentY = TILE_SIZE / 2 + y * TILE_SIZE;
+        this.agent = new Vehicle(this.initialAgentX, this.initialAgentY);
 
         this.seeker = new Seeker(this.matriz_terrenos, this.food, this.agent);
-
     }
 
     async update() {
-        stroke(0);
-        fill(255);
-        circle(this.food.x, this.food.y, 16);
-        stroke(0);
-        fill(168);
+        alert("Iniciando Algoritmo Guloso");
+        this.terrain.generateMap();
+        this.agent = new Vehicle(this.initialAgentX, this.initialAgentY);
+        this.seeker = new Seeker(this.matriz_terrenos, this.food, this.agent);
+        this.target.show();
+
+        this.agent.reset();
         this.agent.show();
+
+        this.seeker.resetVisited();
+        this.seeker.resetDist();
+
+        await this.seeker.GreedySearch();
+
+        await this.showSolution(this.seeker.path);
+
+        await delay(1000);
+        await this.createPath(this.seeker.path);
+        await delay(1000);
+
+        alert("Iniciando Algoritmo Custo Uniforme");
+        this.terrain.generateMap();
+        this.agent = new Vehicle(this.initialAgentX, this.initialAgentY);
+        this.seeker = new Seeker(this.matriz_terrenos, this.food, this.agent);
+        this.target.show();
+
+        this.agent.show();
+
+        this.seeker.resetVisited();
+        this.seeker.resetDist();
 
         await this.seeker.djikstraSearch();
 
         await this.showSolution(this.seeker.path);
 
         await delay(1000);
-        this.createPath(this.seeker.path);
-    }
+        await this.createPath(this.seeker.path);
 
-    generateMap() {
-        for (var i = 0; i < BOARD_TILES; i++) {
-            for (var j = 0; j < BOARD_TILES; j++) {
-                //random entre os 4 tipos de terreno
-                stroke(0);
-                fill(cores[this.matriz_terrenos[i][j]]);
-                rect(i * TILE_SIZE, j * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-            }
-        }
-        stroke(0);
-        fill(255);
-        circle(this.food.x, this.food.y, 16);
-        stroke(0);
-        fill(168);
+        alert("Iniciando Algoritmo A*");
+        this.terrain.generateMap();
+        this.agent = new Vehicle(this.initialAgentX, this.initialAgentY);
+        this.seeker = new Seeker(this.matriz_terrenos, this.food, this.agent);
+        this.target.show();
+
         this.agent.show();
+
+        this.seeker.resetVisited();
+        this.seeker.resetDist();
+
+        await this.seeker.AStarSearch();
+
+        await this.showSolution(this.seeker.path);
+
+        await delay(1000);
+        await this.createPath(this.seeker.path);
     }
 
     async createPath(pathArray) {
-        pathArray;
         for (let index of pathArray) {
             stroke(0);
             strokeWeight(1);
@@ -82,27 +89,20 @@ class World {
             while (this.agent.pos.x != index[0] * TILE_SIZE + TILE_SIZE / 2 || this.agent.pos.y != index[1] * TILE_SIZE + TILE_SIZE / 2) {
                 this.agent.seek(dir);
                 this.agent.update();
+
+                this.terrain.generateMap();
+
+                this.target.show();
                 this.agent.show();
-                strokeWeight(1);
-                this.generateMap();
                 await delay(1);
             }
         }
-        stroke(0);
-        strokeWeight(2);
-        fill(255);
-        circle(this.food.x, this.food.y, 16);
-        this.agent.show();
-        this.agent.collectedFoods += 1;
         alert("Agent has collected the food!");
     }
 
     async showSolution(solution) {
         console.log(solution);
-        background(220);
-        stroke(0);
-        strokeWeight(1);
-        this.generateMap();
+        this.terrain.generateMap();
 
         for (let index of solution) {
             await delay(100);
@@ -111,12 +111,7 @@ class World {
             fill(cores[this.matriz_terrenos[index[0]][index[1]]])
             rect(index[0] * TILE_SIZE, index[1] * TILE_SIZE, TILE_SIZE, TILE_SIZE);
             this.agent.show();
+            this.target.show();
         }
-        stroke(0);
-        strokeWeight(2);
-        fill(255);
-
-        circle(this.food.x, this.food.y, 16);
-
     }
 }
