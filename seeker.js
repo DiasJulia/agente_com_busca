@@ -47,6 +47,7 @@ class Seeker {
     }
 
     markTileAsFringe(i, j) {
+        console.log("aaa", i, j);
         if (!this.visited[i][j]) {
             stroke('red');
             strokeWeight(1);
@@ -262,7 +263,7 @@ class Seeker {
     }
 
     heuristic(a, b) {
-        return abs(a[0] - b[0]) + abs(a[1] - b[1])
+        return Math.max(Math.abs(a[0] - b[0]), Math.abs(a[1] - b[1]));
     }
 
     async GreedySearch() {
@@ -366,9 +367,8 @@ class Seeker {
 
         while (pq.length > 0) {
 
-            pq.shift();
-
-            let index = this.minDistance(this.Dist, this.visited);
+            let current = pq.shift();
+            let index = [current[1], current[2]];
             if (index[0] == -1) {
                 alert("Sem saída!");
                 this.path = [];
@@ -396,26 +396,25 @@ class Seeker {
                 for (let j = -1; j <= 1; j++) {
                     //Opção sem andar na diagonal
                     if (Math.abs(i) == 1 && Math.abs(j) == 1) { continue; }
-                    if (i + x > -1 && i + x < BOARD_TILES && j + y > -1 && j + y < BOARD_TILES) {
+                    if (i + x + 0 > -1 && i + x + 0 < BOARD_TILES && j + y + 0 > -1 && j + y + 0 < BOARD_TILES) {
                         delay(100);
+
+                        console.log(x, y, i, j, x + i, y + j, BOARD_TILES, y + j < BOARD_TILES);
                         this.markTileAsFringe(x + i, y + j);
                         Terreno = this.matrix[x + i][y + j] * 3;
                         cost = this.heuristic([this.food.x, this.food.y], [posX, posY]);
-                        if (Terreno + cost + this.Dist[x][y] < this.Dist[x + i][y + j]) {
+                        if (Terreno + cost + this.Dist[x][y] < this.Dist[x + i][y + j] && this.matrix[x + i][y + j] != 3) {
                             this.Dist[x + i][y + j] = Terreno + cost + this.Dist[x][y];
                             origin[x + i][y + j] = [x, y];
-                            pq.push([this.Dist[x + i][y + j],
-                                [x + i],
-                                [y + j]
-                            ]);
-                            pq.sort((a, b) => {
-                                if (a[0] == b[0]) return a[1] - b[1];
-                                return a[0] - b[0];
-                            });
+                            pq.push([this.Dist[x + i][y + j], x + i, y + j]);
                         }
                     }
                 }
             }
+            pq.sort((a, b) => {
+                if (a[0] == b[0]) return a[1] - b[1];
+                return a[0] - b[0];
+            });
         }
 
         let point = this.found;
