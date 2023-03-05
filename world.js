@@ -50,7 +50,7 @@ class World {
             default:
                 break;
         }
-        console.log(this.seeker.path.length)
+        //console.log(this.seeker.path.length)
         if (this.seeker.path.length != 0 || (this.agent.pos.x == this.target.food.x && this.agent.pos.y == this.target.food.y)) {
             await this.showSolution(this.seeker.path);
 
@@ -96,7 +96,7 @@ class World {
     }
 
     async showSolution(solution) {
-        console.log(solution);
+        //console.log(solution);
         this.terrain.generateMap();
 
         for (let index of solution) {

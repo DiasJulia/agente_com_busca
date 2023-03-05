@@ -8,13 +8,13 @@ class Terrain {
                 //random entre os 4 tipos de terreno
                 T = floor(Math.random() * 4);
                 this.matrix[i][j] = T;
-                console.log(this.matrix);
+                //console.log(this.matrix);
                 stroke(0);
                 fill(cores[T]);
                 rect(i * TILE_SIZE, j * TILE_SIZE, TILE_SIZE, TILE_SIZE);
             }
         }
-        console.log(this.matrix);
+        //console.log(this.matrix);
     }
 
     generateMap() {

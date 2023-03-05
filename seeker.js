@@ -47,7 +47,7 @@ class Seeker {
     }
 
     markTileAsFringe(i, j) {
-        console.log("aaa", i, j);
+        //console.log("aaa", i, j);
         if (!this.visited[i][j]) {
             stroke('red');
             strokeWeight(1);
@@ -399,7 +399,7 @@ class Seeker {
                     if (i + x + 0 > -1 && i + x + 0 < BOARD_TILES && j + y + 0 > -1 && j + y + 0 < BOARD_TILES) {
                         delay(100);
 
-                        console.log(x, y, i, j, x + i, y + j, BOARD_TILES, y + j < BOARD_TILES);
+                        //console.log(x, y, i, j, x + i, y + j, BOARD_TILES, y + j < BOARD_TILES);
                         this.markTileAsFringe(x + i, y + j);
                         Terreno = this.matrix[x + i][y + j] * 3;
                         cost = this.heuristic([this.food.x, this.food.y], [posX, posY]);
