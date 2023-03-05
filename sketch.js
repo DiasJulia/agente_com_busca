@@ -1,10 +1,10 @@
 var screen = 0;
 var choice = 0;
 
-const BOARD_TILES = 8;
-const BOARD_SIZE = 400;
+const BOARD_TILES = 16;
+const BOARD_SIZE = 800;
 const TILE_SIZE = BOARD_SIZE / BOARD_TILES;
-const cores = ['#bbf0e7', '#95e8da', '#0d917b', '#01382f'];
+const cores = ['#CAD2C5', '#64A98C', '#52796F', '#354F52'];
 
 const delay = (milliseconds) => {
     return new Promise(resolve => {
